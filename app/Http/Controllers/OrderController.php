@@ -17,9 +17,7 @@ class OrderController extends Controller
     }
 
     public function index(): JsonResponse {
-        return response()->json([
-            "message" => "Hola created"
-        ], 200);
+        // TODO
     }
 
     public function create(OrderPostRequest $request): JsonResponse {
@@ -35,18 +33,18 @@ class OrderController extends Controller
         $transaction->card = $card;
         $transaction->paymentMethod = PaymentMethodFactory::create($request->paymentMethod);
 
-        $response = $this->service->createOrder($transaction);
+        $result = $this->service->createOrder($transaction);
 
-        if ($response['status'] === 201) {
-            return response()->json([
-                "message" => "Order created",
-                "data" => $response,
-            ], 201);
+        if ($result) {
+            return response()->json(
+                array_merge(
+                    ["message" => "Order created"],
+                    $result
+                ), 201);
         }
 
         return response()->json([
-            "message" => "Error",
-            "data" => $response,
-        ], $response['status']);
+            "message" => "Error creating the order",
+        ], 400);
     }
 }
