@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Payable;
 use App\Models\PaymentMethod;
+use Cassandra\Date;
 use Illuminate\Support\Facades\Http;
 
 class PayableRepository {
@@ -42,6 +43,25 @@ class PayableRepository {
         $payable->discount = $response->json('discount');
         $payable->creationDate = \DateTime::createFromFormat('d/m/Y', $response->json('create_date'));
         return $payable;
+    }
+
+    public function getAll(): array {
+        $response = Http::get(
+            self::SERVER_URL,
+        );
+        $payables = [];
+
+        foreach ($response->collect() as $item) {
+            $payable = new Payable();
+            $payable->id = $item['id'];
+            $payable->total = $item['total'];
+            $payable->subtotal = $item['subtotal'];
+            $payable->discount = $item['discount'];
+            $payable->creationDate = \DateTime::createFromFormat('d/m/Y', $item['create_date']);
+            $payables[] = $payable;
+        }
+
+        return $payables;
     }
 
     private function formatNumber(float $number): string {

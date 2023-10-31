@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Factories\PaymentMethodFactory;
 use App\Http\Requests\OrderPostRequest;
+use App\Http\Requests\SummaryGetRequest;
 use App\Models\Card;
 use App\Models\Transaction;
 use App\Services\OrderService;
@@ -16,8 +17,10 @@ class OrderController extends Controller
     {
     }
 
-    public function index(): JsonResponse {
-        // TODO
+    public function index(SummaryGetRequest $request): JsonResponse {
+        return response()->json(
+            $this->service->getSummary($request->startDate, $request->endDate)
+        );
     }
 
     public function create(OrderPostRequest $request): JsonResponse {

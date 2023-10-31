@@ -20,4 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/order', [OrderController::class, 'create']);
-Route::get('/summary', [OrderController::class, 'index']);
+Route::get('/payables', [OrderController::class, 'index']);

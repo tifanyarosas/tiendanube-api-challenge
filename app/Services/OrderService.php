@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Transaction;
 use App\Repositories\PayableRepository;
 use App\Repositories\TransactionRepository;
+use Illuminate\Support\Collection;
 
 class OrderService {
 
@@ -34,5 +35,33 @@ class OrderService {
             'transactionId' => $transactionId,
             'payableId' => $payableId,
         ];
+    }
+
+    /*
+        Valor total pago de cuentas por cobrar
+        Total cobrado de tasas en los pagos
+        Valor de futuros ingresos
+    */
+    public function getSummary(\DateTime $startDate, \DateTime $endDate): array {
+        $payables = $this->payableRepository->getAll();
+        $totalToGetPaid = $totalFees = $totalPaid = 0;
+        foreach ($payables as $payable) {
+            if ($this->isDateValid($payable->creationDate, $startDate, $endDate)) {
+                if ($payable->status === 'paid') {
+                    $totalFees += $payable->discount;
+                } else {
+                    $totalToGetPaid += $payable->total;
+                }
+            }
+        }
+
+        return [
+            'fees' => $totalFees,
+            'totalToGetPaid' => $totalToGetPaid,
+        ];
+    }
+
+    private function isDateValid(\DateTime $date, \DateTime $startDate, \DateTime $endDate): bool {
+
     }
 }
