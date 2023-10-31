@@ -27,7 +27,7 @@ Los endpoints creados son:
 
 ### Posibles mejoras
 
-- Implementar más tests
-- Poder diferenciar entre payables de diferentes merchants
-- Agregar validaciones faltantes 
-- 
+- Implementar más tests.
+- Poder diferenciar entre payables de diferentes merchants.
+- Agregar validaciones faltantes.
+- Retornar un mensaje de error más informativo si la creacion de la transaccion falla.
