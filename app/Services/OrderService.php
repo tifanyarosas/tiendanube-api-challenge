@@ -49,7 +49,7 @@ class OrderService {
             if ($this->isDateValid($payable->creationDate, $startDate, $endDate)) {
                 if ($payable->status === 'paid') {
                     $totalFees += $payable->discount;
-                    $totalPaid += $payable->subtotal;
+                    $totalPaid += $payable->total;
                 } else {
                     $totalToGetPaid += $payable->total;
                 }
