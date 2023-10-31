@@ -64,6 +64,8 @@ class OrderControllerTest extends TestCase
     #[DataProvider('payableProvider')]
     public function testGetSummary(
         array $payables,
+        string $startDate,
+        string $endDate,
         float $expectedTotalFee,
         float $expectedTotalToGetPaid,
         float $expectedTotalPaid,
@@ -75,8 +77,8 @@ class OrderControllerTest extends TestCase
         $service = app()->make(OrderService::class, ['payableRepository' => $payableRepository]);
 
         $request = new SummaryGetRequest([
-            'startDate' => '10/10/2023',
-            'endDate' => '11/10/2023',
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ]);
 
         $controller = new OrderController($service);
@@ -93,12 +95,32 @@ class OrderControllerTest extends TestCase
         return [
             [
                 'payables' => [],
+                'startDate' => '2023/10/31',
+                'endDate' => '2023/11/31',
                 'expectedTotalFee' => 0,
                 'expectedTotalToGetPaid' => 0,
                 'expectedTotalPaid' => 0,
             ],
             [
-                'payables' => [],
+                'payables' => [
+                    self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
+                    self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
+                    self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
+                ],
+                'startDate' => '2023/10/31',
+                'endDate' => '2023/11/31',
+                'expectedTotalFee' => 6,
+                'expectedTotalToGetPaid' => 196,
+                'expectedTotalPaid' => 194,
+            ],
+            [
+                'payables' => [
+                    self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
+                    self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
+                    self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
+                ],
+                'startDate' => '2023/01/31',
+                'endDate' => '2023/02/31',
                 'expectedTotalFee' => 0,
                 'expectedTotalToGetPaid' => 0,
                 'expectedTotalPaid' => 0,
@@ -106,7 +128,14 @@ class OrderControllerTest extends TestCase
         ];
     }
 
-    private static function buildPayable(): Payable {
-        
+    private static function buildPayable(float $subtotal, float $discount, string $status, \DateTime $date): Payable {
+        $payable = new Payable();
+        $payable->id = substr(str_shuffle(str_repeat($x='abcdefghijklmnopqrstuvwxyz', ceil(4/strlen($x)) )),1,4);
+        $payable->status = $status;
+        $payable->total = $subtotal - $discount;
+        $payable->subtotal = $subtotal;
+        $payable->discount = $discount;
+        $payable->creationDate = $date;
+        return $payable;
     }
 }
