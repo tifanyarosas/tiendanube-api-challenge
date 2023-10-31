@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\NotFoundException;
 use App\Models\Payable;
 use App\Models\PaymentMethod;
 use Cassandra\Date;
@@ -34,7 +35,7 @@ class PayableRepository {
         );
 
         if ($response->notFound()) {
-            throw new \Exception('Not found');
+            throw new NotFoundException();
         }
 
         $payable = new Payable();

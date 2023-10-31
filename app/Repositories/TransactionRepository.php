@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\NotFoundException;
 use App\Factories\PaymentMethodFactory;
 use App\Models\Card;
 use App\Models\Transaction;
@@ -41,7 +42,7 @@ class TransactionRepository {
         );
 
         if ($response->notFound()) {
-            throw new \Exception('Not found');
+            throw new NotFoundException();
         }
 
         $card = new Card();
