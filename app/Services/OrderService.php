@@ -46,7 +46,7 @@ class OrderService {
         $payables = $this->payableRepository->getAll();
         $totalToGetPaid = $totalFees = $totalPaid = 0;
         foreach ($payables as $payable) {
-            if ($this->isDateValid($payable->creationDate, $startDate, $endDate)) {
+            if ($this->isDateValid($payable->createDate, $startDate, $endDate)) {
                 if ($payable->status === 'paid') {
                     $totalFees += $payable->discount;
                     $totalPaid += $payable->total;
@@ -64,6 +64,6 @@ class OrderService {
     }
 
     private function isDateValid(\DateTime $date, \DateTime $startDate, \DateTime $endDate): bool {
-        return true;
+        return $date >= $startDate && $date <= $endDate;
     }
 }

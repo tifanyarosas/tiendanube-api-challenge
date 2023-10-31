@@ -13,11 +13,12 @@ class PayableRepository {
 
     public function create(PaymentMethod $paymentMethod, float $value): string|null {
         $discount = $paymentMethod->getFee() * $value / 100;
+
         $response = Http::post(
             self::SERVER_URL,
             [
                 'status' => $paymentMethod->getStatusAfterPayment(),
-                'create_date' => date_format(new \DateTime(), 'd/m/Y'),
+                'create_date' => $this->calculateCreateDate($paymentMethod),
                 'subtotal' => $this->formatNumber($value),
                 'discount' => $this->formatNumber($discount),
                 'total' => $this->formatNumber($value - $discount),
@@ -41,7 +42,7 @@ class PayableRepository {
         $payable->total = $response->json('total');
         $payable->subtotal = $response->json('subtotal');
         $payable->discount = $response->json('discount');
-        $payable->creationDate = \DateTime::createFromFormat('d/m/Y', $response->json('create_date'));
+        $payable->createDate = \DateTime::createFromFormat('d/m/Y', $response->json('create_date'));
         return $payable;
     }
 
@@ -57,7 +58,7 @@ class PayableRepository {
             $payable->total = $item['total'];
             $payable->subtotal = $item['subtotal'];
             $payable->discount = $item['discount'];
-            $payable->creationDate = \DateTime::createFromFormat('d/m/Y', $item['create_date']);
+            $payable->createDate = \DateTime::createFromFormat('d/m/Y', $item['create_date']);
             $payables[] = $payable;
         }
 
@@ -66,5 +67,21 @@ class PayableRepository {
 
     private function formatNumber(float $number): string {
         return number_format($number, 2, '.', '');
+    }
+
+    /**
+     * @param PaymentMethod $paymentMethod
+     * @return string
+     */
+    public function calculateCreateDate(PaymentMethod $paymentMethod): string
+    {
+        if ($paymentMethod->getStatusAfterPayment() === Payable::STATUS_PAID)
+            $createDate = date_format(new \DateTime(), 'd/m/Y');
+        else {
+            $date = new \DateTime();
+            $date->add(new \DateInterval('P30D'));
+            $createDate = $date->format('d/m/Y');
+        }
+        return $createDate;
     }
 }
