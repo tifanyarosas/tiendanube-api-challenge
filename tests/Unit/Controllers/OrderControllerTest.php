@@ -93,7 +93,7 @@ class OrderControllerTest extends TestCase
     public static function payableProvider(): array
     {
         return [
-            [
+            'test without any payable' => [
                 'payables' => [],
                 'startDate' => '2023/10/31',
                 'endDate' => '2023/11/31',
@@ -101,7 +101,7 @@ class OrderControllerTest extends TestCase
                 'expectedTotalToGetPaid' => 0,
                 'expectedTotalPaid' => 0,
             ],
-            [
+            'test with payables, all in the date range' => [
                 'payables' => [
                     self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
                     self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
@@ -113,7 +113,7 @@ class OrderControllerTest extends TestCase
                 'expectedTotalToGetPaid' => 196,
                 'expectedTotalPaid' => 194,
             ],
-            [
+            'test with payables, all out the date range' => [
                 'payables' => [
                     self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
                     self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
@@ -125,6 +125,19 @@ class OrderControllerTest extends TestCase
                 'expectedTotalToGetPaid' => 0,
                 'expectedTotalPaid' => 0,
             ],
+            'test with payables, some in the date range' => [
+                'payables' => [
+                    self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
+                    self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
+                    self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
+                    self::buildPayable(100, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/12/31')),
+                ],
+                'startDate' => '2023/10/01',
+                'endDate' => '2023/11/31',
+                'expectedTotalFee' => 6,
+                'expectedTotalToGetPaid' => 196,
+                'expectedTotalPaid' => 194,
+            ],
         ];
     }
 
@@ -135,7 +148,7 @@ class OrderControllerTest extends TestCase
         $payable->total = $subtotal - $discount;
         $payable->subtotal = $subtotal;
         $payable->discount = $discount;
-        $payable->creationDate = $date;
+        $payable->createDate = $date;
         return $payable;
     }
 }
