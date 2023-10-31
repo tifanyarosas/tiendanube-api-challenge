@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Transaction;
 use App\Repositories\PayableRepository;
 use App\Repositories\TransactionRepository;
-use Illuminate\Support\Collection;
 
 class OrderService {
 
@@ -36,7 +35,7 @@ class OrderService {
             'payableId' => $payableId,
         ];
     }
-    
+
     public function getSummary(\DateTime $startDate, \DateTime $endDate): array {
         $payables = $this->payableRepository->getAll();
         $totalToGetPaid = $totalFees = $totalPaid = 0;

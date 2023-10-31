@@ -90,54 +90,52 @@ class OrderControllerTest extends TestCase
         $this->assertEquals($expectedTotalPaid, $data['totalPaid']);
     }
 
-    public static function payableProvider(): array
+    public static function payableProvider(): \Iterator
     {
-        return [
-            'test without any payable' => [
-                'payables' => [],
-                'startDate' => '2023/10/31',
-                'endDate' => '2023/11/31',
-                'expectedTotalFee' => 0,
-                'expectedTotalToGetPaid' => 0,
-                'expectedTotalPaid' => 0,
+        yield 'test without any payable' => [
+            'payables' => [],
+            'startDate' => '2023/10/31',
+            'endDate' => '2023/11/31',
+            'expectedTotalFee' => 0,
+            'expectedTotalToGetPaid' => 0,
+            'expectedTotalPaid' => 0,
+        ];
+        yield 'test with payables, all in the date range' => [
+            'payables' => [
+                self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
+                self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
+                self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
             ],
-            'test with payables, all in the date range' => [
-                'payables' => [
-                    self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
-                    self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
-                    self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
-                ],
-                'startDate' => '2023/10/31',
-                'endDate' => '2023/11/31',
-                'expectedTotalFee' => 6,
-                'expectedTotalToGetPaid' => 196,
-                'expectedTotalPaid' => 194,
+            'startDate' => '2023/10/31',
+            'endDate' => '2023/11/31',
+            'expectedTotalFee' => 6,
+            'expectedTotalToGetPaid' => 196,
+            'expectedTotalPaid' => 194,
+        ];
+        yield 'test with payables, all out the date range' => [
+            'payables' => [
+                self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
+                self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
+                self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
             ],
-            'test with payables, all out the date range' => [
-                'payables' => [
-                    self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
-                    self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
-                    self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
-                ],
-                'startDate' => '2023/01/31',
-                'endDate' => '2023/02/31',
-                'expectedTotalFee' => 0,
-                'expectedTotalToGetPaid' => 0,
-                'expectedTotalPaid' => 0,
+            'startDate' => '2023/01/31',
+            'endDate' => '2023/02/31',
+            'expectedTotalFee' => 0,
+            'expectedTotalToGetPaid' => 0,
+            'expectedTotalPaid' => 0,
+        ];
+        yield 'test with payables, some in the date range' => [
+            'payables' => [
+                self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
+                self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
+                self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
+                self::buildPayable(100, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/12/31')),
             ],
-            'test with payables, some in the date range' => [
-                'payables' => [
-                    self::buildPayable(100, 2, Payable::STATUS_PAID,  new \DateTime('2023/10/31')),
-                    self::buildPayable(200, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/11/10')),
-                    self::buildPayable(100, 4, Payable::STATUS_PAID, new \DateTime('2023/10/31')),
-                    self::buildPayable(100, 4, Payable::STATUS_WAITING_FUNDS, new \DateTime('2023/12/31')),
-                ],
-                'startDate' => '2023/10/01',
-                'endDate' => '2023/11/31',
-                'expectedTotalFee' => 6,
-                'expectedTotalToGetPaid' => 196,
-                'expectedTotalPaid' => 194,
-            ],
+            'startDate' => '2023/10/01',
+            'endDate' => '2023/11/31',
+            'expectedTotalFee' => 6,
+            'expectedTotalToGetPaid' => 196,
+            'expectedTotalPaid' => 194,
         ];
     }
 
