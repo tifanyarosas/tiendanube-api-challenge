@@ -8,6 +8,7 @@ use App\Http\Requests\SummaryGetRequest;
 use App\Models\Card;
 use App\Models\Transaction;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
@@ -19,7 +20,7 @@ class OrderController extends Controller
 
     public function index(SummaryGetRequest $request): JsonResponse {
         return response()->json(
-            $this->service->getSummary($request->startDate, $request->endDate)
+            $this->service->getSummary(Carbon::parse($request->startDate), Carbon::parse($request->endDate))
         );
     }
 

@@ -49,6 +49,7 @@ class OrderService {
             if ($this->isDateValid($payable->creationDate, $startDate, $endDate)) {
                 if ($payable->status === 'paid') {
                     $totalFees += $payable->discount;
+                    $totalPaid += $payable->subtotal;
                 } else {
                     $totalToGetPaid += $payable->total;
                 }
@@ -56,12 +57,13 @@ class OrderService {
         }
 
         return [
-            'fees' => $totalFees,
+            'totalFees' => $totalFees,
             'totalToGetPaid' => $totalToGetPaid,
+            'totalPaid' => $totalPaid,
         ];
     }
 
     private function isDateValid(\DateTime $date, \DateTime $startDate, \DateTime $endDate): bool {
-
+        return true;
     }
 }
