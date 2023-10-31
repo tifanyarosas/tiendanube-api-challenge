@@ -4,9 +4,13 @@ namespace Tests\Unit\Controllers;
 
 use App\Http\Controllers\OrderController;
 use App\Http\Requests\OrderPostRequest;
+use App\Http\Requests\SummaryGetRequest;
 use App\Models\DebitCardPayment;
+use App\Models\Payable;
+use App\Repositories\PayableRepository;
 use App\Services\OrderService;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class OrderControllerTest extends TestCase
@@ -55,5 +59,54 @@ class OrderControllerTest extends TestCase
 
         $response = $this->controller->create($this->request);
         $this->assertEquals(400, $response->status());
+    }
+
+    #[DataProvider('payableProvider')]
+    public function testGetSummary(
+        array $payables,
+        float $expectedTotalFee,
+        float $expectedTotalToGetPaid,
+        float $expectedTotalPaid,
+    ): void {
+        $payableRepository = $this->createMock(PayableRepository::class);
+        $payableRepository->expects($this->once())
+            ->method('getAll')
+            ->willReturn($payables);
+        $service = app()->make(OrderService::class, ['payableRepository' => $payableRepository]);
+
+        $request = new SummaryGetRequest([
+            'startDate' => '10/10/2023',
+            'endDate' => '11/10/2023',
+        ]);
+
+        $controller = new OrderController($service);
+        $response = $controller->index($request);
+        $data = $response->getData(true);
+
+        $this->assertEquals($expectedTotalFee, $data['totalFees']);
+        $this->assertEquals($expectedTotalToGetPaid, $data['totalToGetPaid']);
+        $this->assertEquals($expectedTotalPaid, $data['totalPaid']);
+    }
+
+    public static function payableProvider(): array
+    {
+        return [
+            [
+                'payables' => [],
+                'expectedTotalFee' => 0,
+                'expectedTotalToGetPaid' => 0,
+                'expectedTotalPaid' => 0,
+            ],
+            [
+                'payables' => [],
+                'expectedTotalFee' => 0,
+                'expectedTotalToGetPaid' => 0,
+                'expectedTotalPaid' => 0,
+            ],
+        ];
+    }
+
+    private static function buildPayable(): Payable {
+        
     }
 }
