@@ -16,7 +16,7 @@ Tener en cuenta que debe estar corriendo la Mock Api (ver instrucciones en enunc
 
 Los endpoints creados son:
 
-`POST http://127.0.0.1:8000/api/transaction`
+`POST http://127.0.0.1:8000/api/transactions`
 
 `GET http://127.0.0.1:8000/api/payables?startDate=yyy-mm-dd&endDate=yyyy-mm-dd`
 
