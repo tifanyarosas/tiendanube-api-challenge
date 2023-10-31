@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Http;
 
 class PayableRepository {
 
-    const SERVER_URL = 'http://0.0.0.0:8080/';
+    const SERVER_URL = 'http://0.0.0.0:8080/payables/';
 
     public function create(PaymentMethod $paymentMethod, float $value): string|null {
         $discount = $paymentMethod->getFee() * $value / 100;
         $response = Http::post(
-            self::SERVER_URL . 'payables',
+            self::SERVER_URL,
             [
                 'status' => $paymentMethod->getStatusAfterPayment(),
                 'create_date' => date_format(new \DateTime(), 'd/m/Y'),
@@ -28,7 +28,7 @@ class PayableRepository {
 
     public function getById(string $payableId): Payable {
         $response = Http::get(
-            self::SERVER_URL . 'payables/' . $payableId,
+            self::SERVER_URL . $payableId,
         );
 
         if ($response->notFound()) {

@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Http;
 
 class TransactionRepository {
 
-    const SERVER_URL = 'http://0.0.0.0:8080/';
+    const SERVER_URL = 'http://0.0.0.0:8080/transactions/';
 
     public function create(Transaction $transaction): string|null
     {
         $response = Http::post(
-            self::SERVER_URL . 'transactions',
+            self::SERVER_URL,
             [
                 'value' => number_format($transaction->value, 2, '.', ''),
                 'description' => $transaction->description,
@@ -31,13 +31,13 @@ class TransactionRepository {
 
     public function deleteById(string $transactionId): void {
         Http::delete(
-            self::SERVER_URL . 'transactions/' . $transactionId,
+            self::SERVER_URL . $transactionId,
         );
     }
 
     public function getById(string $transactionId): Transaction {
         $response = Http::get(
-            self::SERVER_URL . 'transactions/' . $transactionId,
+            self::SERVER_URL . $transactionId,
         );
 
         if ($response->notFound()) {
