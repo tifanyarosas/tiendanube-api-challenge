@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Factories\PaymentMethodFactory;
-use App\Http\Requests\OrderPostRequest;
+use App\Http\Requests\TransactionCreationRequest;
 use App\Http\Requests\SummaryGetRequest;
 use App\Models\Card;
 use App\Models\Transaction;
-use App\Services\OrderService;
+use App\Services\TransactionService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
-class OrderController extends Controller
+class TransactionController extends Controller
 {
 
-    public function __construct(private OrderService $service)
+    public function __construct(private TransactionService $service)
     {
     }
 
@@ -24,7 +24,7 @@ class OrderController extends Controller
         );
     }
 
-    public function create(OrderPostRequest $request): JsonResponse {
+    public function create(TransactionCreationRequest $request): JsonResponse {
         $card = new Card();
         $card->number = $request->cardNumber;
         $card->owner = $request->cardHolderName;
@@ -42,13 +42,13 @@ class OrderController extends Controller
         if ($result) {
             return response()->json(
                 array_merge(
-                    ["message" => "Order created"],
+                    ["message" => "Transaction created"],
                     $result
                 ), 201);
         }
 
         return response()->json([
-            "message" => "Error creating the order",
+            "message" => "Error creating the transaction",
         ], 400);
     }
 }

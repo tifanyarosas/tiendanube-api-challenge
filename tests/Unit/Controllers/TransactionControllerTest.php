@@ -2,28 +2,28 @@
 
 namespace Tests\Unit\Controllers;
 
-use App\Http\Controllers\OrderController;
-use App\Http\Requests\OrderPostRequest;
+use App\Http\Controllers\TransactionController;
+use App\Http\Requests\TransactionCreationRequest;
 use App\Http\Requests\SummaryGetRequest;
 use App\Models\DebitCardPayment;
 use App\Models\Payable;
 use App\Repositories\PayableRepository;
-use App\Services\OrderService;
+use App\Services\TransactionService;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-class OrderControllerTest extends TestCase
+class TransactionControllerTest extends TestCase
 {
-    private MockInterface|OrderService $service;
-    private OrderController $controller;
-    private OrderPostRequest $request;
+    private MockInterface|TransactionService $service;
+    private TransactionController $controller;
+    private TransactionCreationRequest $request;
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = $this->createMock(OrderService::class);
-        $this->controller = new OrderController($this->service);
-        $this->request = new OrderPostRequest([
+        $this->service = $this->createMock(TransactionService::class);
+        $this->controller = new TransactionController($this->service);
+        $this->request = new TransactionCreationRequest([
             'value' => '100.10',
             'description' => 'Jumper Size M',
             'paymentMethod' => DebitCardPayment::DEBIT_CARD,
@@ -34,7 +34,7 @@ class OrderControllerTest extends TestCase
         ]);
     }
 
-    public function testCreateOrderSuccessfully(): void
+    public function testCreateTransactionSuccessfully(): void
     {
         $this->service
             ->expects($this->once())
@@ -50,7 +50,7 @@ class OrderControllerTest extends TestCase
         $this->assertEquals('zxc', $response->getData(true)['payableId']);
     }
 
-    public function testCreateOrderFail(): void
+    public function testCreateTransactionFail(): void
     {
         $this->service
             ->expects($this->once())
@@ -74,14 +74,14 @@ class OrderControllerTest extends TestCase
         $payableRepository->expects($this->once())
             ->method('getAll')
             ->willReturn($payables);
-        $service = app()->make(OrderService::class, ['payableRepository' => $payableRepository]);
+        $service = app()->make(TransactionService::class, ['payableRepository' => $payableRepository]);
 
         $request = new SummaryGetRequest([
             'startDate' => $startDate,
             'endDate' => $endDate,
         ]);
 
-        $controller = new OrderController($service);
+        $controller = new TransactionController($service);
         $response = $controller->index($request);
         $data = $response->getData(true);
 

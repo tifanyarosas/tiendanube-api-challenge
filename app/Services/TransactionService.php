@@ -6,7 +6,7 @@ use App\Models\Transaction;
 use App\Repositories\PayableRepository;
 use App\Repositories\TransactionRepository;
 
-class OrderService {
+class TransactionService {
 
     public function __construct(
         private TransactionRepository $transactionRepository,

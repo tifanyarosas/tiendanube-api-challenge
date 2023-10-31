@@ -2,29 +2,29 @@
 
 namespace Tests\Feature\Controllers;
 
-use App\Http\Controllers\OrderController;
-use App\Http\Requests\OrderPostRequest;
+use App\Http\Controllers\TransactionController;
+use App\Http\Requests\TransactionCreationRequest;
 use App\Models\DebitCardPayment;
 use App\Repositories\PayableRepository;
 use App\Repositories\TransactionRepository;
-use App\Services\OrderService;
+use App\Services\TransactionService;
 use Tests\TestCase;
 
-class OrderControllerTest extends TestCase
+class TransactionControllerTest extends TestCase
 {
-    private OrderService $service;
-    private OrderController $controller;
+    private TransactionService $service;
+    private TransactionController $controller;
     private TransactionRepository $transactionRepository;
     private PayableRepository $payableRepository;
-    private OrderPostRequest $request;
+    private TransactionCreationRequest $request;
     protected function setUp(): void
     {
         parent::setUp();
         $this->transactionRepository = new TransactionRepository();
         $this->payableRepository = new PayableRepository();
-        $this->service = new OrderService($this->transactionRepository, $this->payableRepository);
-        $this->controller = new OrderController($this->service);
-        $this->request = new OrderPostRequest([
+        $this->service = new TransactionService($this->transactionRepository, $this->payableRepository);
+        $this->controller = new TransactionController($this->service);
+        $this->request = new TransactionCreationRequest([
             'value' => '100.10',
             'description' => 'Jumper Size M',
             'paymentMethod' => DebitCardPayment::DEBIT_CARD,
@@ -35,7 +35,7 @@ class OrderControllerTest extends TestCase
         ]);
     }
 
-    public function testCreateOrderSuccessfully(): void
+    public function testCreateTransactionSuccessfully(): void
     {
         $response = $this->controller->create($this->request);
         $this->assertEquals(201, $response->status());
