@@ -55,6 +55,7 @@ class PayableRepository {
         foreach ($response->collect() as $item) {
             $payable = new Payable();
             $payable->id = $item['id'];
+            $payable->status = $item['status'];
             $payable->total = $item['total'];
             $payable->subtotal = $item['subtotal'];
             $payable->discount = $item['discount'];

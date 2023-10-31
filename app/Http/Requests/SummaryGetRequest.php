@@ -23,8 +23,8 @@ class SummaryGetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'startDate' => ['required', 'date'],
-            'endDate' => ['required', 'date'],
+            'startDate' => ['required', 'date_format:Y-m-d'],
+            'endDate' => ['required', 'date_format:Y-m-d'],
         ];
     }
 }

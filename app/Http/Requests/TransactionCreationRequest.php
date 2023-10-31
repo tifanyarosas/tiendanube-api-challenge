@@ -30,7 +30,7 @@ class TransactionCreationRequest extends FormRequest
             'description' => ['required', 'string', 'max:255'],
             'paymentMethod' => ['required', Rule::in([DebitCardPayment::DEBIT_CARD, CreditCardPayment::CREDIT_CARD])],
             'cardNumber' => ['required', 'digits:4'],
-            'cardHolderName' => 'required',
+            'cardHolderName' => ['required'],
             'cardExpirationDate' => ['required'],
             'cardCvv' => ['required', 'digits:3'],
         ];
